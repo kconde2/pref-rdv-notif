@@ -22,7 +22,7 @@ make up
 
 ## Usefull links
 
-- APP URL : (http://rdv.localhost/)[http://rdv.localhost/]
+- APP URL : [http://rdv.localhost/](http://rdv.localhost/)
 
 ## Docker dependencies
 

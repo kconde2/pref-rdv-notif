@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
     traefik:
-        image: "traefik:v2.0.2"
+        image: "traefik:v2.0.5"
         container_name: "${PROJECT_NAME}_traefik"
         command:
             - "--log.level=DEBUG"
@@ -42,25 +42,8 @@ services:
             - 80
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.apache.rule=Host(`$DOMAIN_NAME`)"
+            - "traefik.http.routers.apache.rule=Host(`rdv.$DOMAIN_NAME`)"
             - "traefik.http.routers.apache.entrypoints=web"
-
-    # phpMyAdmin
-    phpmyadmin:
-        image: phpmyadmin/phpmyadmin
-        container_name: ${PROJECT_NAME}_phpmyadmin
-        depends_on:
-            - mysql
-        networks:
-            - proxy
-        expose:
-            - 80
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.pma.rule=Host(`pma.$DOMAIN_NAME`)"
-            - "traefik.http.routers.pma.entrypoints=web"
-        environment:
-            PMA_HOST: mysql
 
     # MySQL
     mysql:
@@ -76,16 +59,33 @@ services:
             MYSQL_USER: $DB_USERNAME
             MYSQL_PASSWORD: $DB_PASSWORD
 
-    maildev:
-        image: djfarrelly/maildev
-        container_name: ${PROJECT_NAME}_maildev
-        networks:
-            - proxy
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.maildev.rule=Host(`maildev.$DOMAIN_NAME`)"
-            - "traefik.http.services.maildev.loadbalancer.server.port=80"
-            - "traefik.http.routers.maildev.entrypoints=web"
+    # # phpMyAdmin
+    # phpmyadmin:
+    #     image: phpmyadmin/phpmyadmin
+    #     container_name: ${PROJECT_NAME}_phpmyadmin
+    #     depends_on:
+    #         - mysql
+    #     networks:
+    #         - proxy
+    #     expose:
+    #         - 80
+    #     labels:
+    #         - "traefik.enable=true"
+    #         - "traefik.http.routers.pma.rule=Host(`pma.$DOMAIN_NAME`)"
+    #         - "traefik.http.routers.pma.entrypoints=web"
+    #     environment:
+    #         PMA_HOST: mysql
+
+    # maildev:
+    #     image: djfarrelly/maildev
+    #     container_name: ${PROJECT_NAME}_maildev
+    #     networks:
+    #         - proxy
+    #     labels:
+    #         - "traefik.enable=true"
+    #         - "traefik.http.routers.maildev.rule=Host(`maildev.$DOMAIN_NAME`)"
+    #         - "traefik.http.services.maildev.loadbalancer.server.port=80"
+    #         - "traefik.http.routers.maildev.entrypoints=web"
 
 networks:
   proxy:
