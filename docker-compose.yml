@@ -28,14 +28,16 @@ services:
     apache:
         build:
             context: ./docker/apache
-            dockerfile: Dockerfile.work
+            dockerfile: Dockerfile
         container_name: ${PROJECT_NAME}_apache
-        depends_on:
-            - mysql
+        # depends_on:
+        #     - mysql
         networks:
             - proxy
         volumes:
             - ./docker/apache/apache2.conf:/etc/apache2/conf-enabled/apache2.conf:ro
+            - ./docker/apache/supercronic/:/etc/cron.d/supercronic/
+            - ./docker/apache/supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
             - ./docker/php/php.ini:/usr/local/etc/php/php.ini
             - ./app:/var/www/symfony:cached
         expose:
@@ -45,19 +47,19 @@ services:
             - "traefik.http.routers.apache.rule=Host(`rdv.$DOMAIN_NAME`)"
             - "traefik.http.routers.apache.entrypoints=web"
 
-    # MySQL
-    mysql:
-        image: mysql:5.7
-        container_name: ${PROJECT_NAME}_mysql
-        volumes:
-            - ./docker/mysql/data:/var/lib/mysql
-        networks:
-            - proxy
-        environment:
-            MYSQL_ROOT_PASSWORD: $DB_ROOT_PASSWORD
-            MYSQL_DATABASE: $DB_DATABASE
-            MYSQL_USER: $DB_USERNAME
-            MYSQL_PASSWORD: $DB_PASSWORD
+    # # MySQL
+    # mysql:
+    #     image: mysql:5.7
+    #     container_name: ${PROJECT_NAME}_mysql
+    #     volumes:
+    #         - ./docker/mysql/data:/var/lib/mysql
+    #     networks:
+    #         - proxy
+    #     environment:
+    #         MYSQL_ROOT_PASSWORD: $DB_ROOT_PASSWORD
+    #         MYSQL_DATABASE: $DB_DATABASE
+    #         MYSQL_USER: $DB_USERNAME
+    #         MYSQL_PASSWORD: $DB_PASSWORD
 
     # # phpMyAdmin
     # phpmyadmin:
@@ -76,16 +78,17 @@ services:
     #     environment:
     #         PMA_HOST: mysql
 
-    # maildev:
-    #     image: djfarrelly/maildev
-    #     container_name: ${PROJECT_NAME}_maildev
-    #     networks:
-    #         - proxy
-    #     labels:
-    #         - "traefik.enable=true"
-    #         - "traefik.http.routers.maildev.rule=Host(`maildev.$DOMAIN_NAME`)"
-    #         - "traefik.http.services.maildev.loadbalancer.server.port=80"
-    #         - "traefik.http.routers.maildev.entrypoints=web"
+    maildev:
+        image: djfarrelly/maildev
+        container_name: ${PROJECT_NAME}_maildev
+        command: bin/maildev --web 80 --smtp 25 --hide-extensions STARTTLS
+        networks:
+            - proxy
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.maildev.rule=Host(`mail.$DOMAIN_NAME`)"
+            - "traefik.http.services.maildev.loadbalancer.server.port=80"
+            - "traefik.http.routers.maildev.entrypoints=web"
 
 networks:
   proxy:

@@ -9,6 +9,9 @@ up: ## launch docker container
 build: ## build docker container
 	docker-compose up -d --build
 
+logs: ## build docker container
+	docker-compose logs -f apache
+
 down: ## stop and remove docker container
 	docker-compose down
 

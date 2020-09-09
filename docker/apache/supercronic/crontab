@@ -1,0 +1,2 @@
+# Run every minute
+*/1 * * * * php bin/console app:appointment:check
