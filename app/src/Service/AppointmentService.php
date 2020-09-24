@@ -39,14 +39,22 @@ class AppointmentService
         $this->client->executeScript('document.querySelector("input[name=nextButton]").click()');
 
         $this->client->waitFor('#container');
-
         // refresh crawler so you can crawl newly loaded page
         // https://github.com/symfony/panther/issues/172
         $crawler = $this->client->refreshCrawler();
 
+        // Ajouter pour la préfecture de ROUEN
+        $form = $crawler->filter('#FormBookingCreate')->form();
+        $form['planning']->setValue('25545');
+        $this->client->takeScreenshot('screen2.png');
+        $this->client->executeScript('document.querySelector("input[name=nextButton]").click()');
+        $this->client->waitFor('#container');
+
+        $crawler = $this->client->refreshCrawler();
+
         $t = $crawler->filter('.FormValidate')->text();
 
-        $this->client->takeScreenshot('screen2.png'); // Yeah, screenshot!
+        $this->client->takeScreenshot('screen3.png'); // Yeah, screenshot!
 
         $availability = "Il n'existe plus de plage horaire libre pour votre demande de rendez-vous. Veuillez recommencer ultérieurement." !== $t;
 
