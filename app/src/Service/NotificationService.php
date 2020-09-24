@@ -25,7 +25,8 @@ class NotificationService
                 ->subject('Notification de rendez-vous')
                 ->html($message)
                 ->attachFromPath('screen1.png', 'RDV Page 1')
-                ->attachFromPath('screen2.png', 'RDV Page 2');
+                ->attachFromPath('screen2.png', 'RDV Page 2')
+                ->attachFromPath('screen3.png', 'RDV Page 3');
 
             $this->mailer->send($email);
         }
